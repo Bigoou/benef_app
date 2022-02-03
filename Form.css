@@ -1,0 +1,40 @@
+/* :root[data-theme="theme-light"] {
+    --primary-color: #FF5640;
+    --text-color: #FF5050;
+    --bg-text-color: #FFF9F5;
+    --button-color: #E00000;
+}
+
+:root[data-theme="theme-dark"] {
+    --primary-color: #49afd9;
+    --text-color: #e3f5fc;
+    --bg-color: #1b2a32;
+    --component-bg-color: #22343c;
+}
+
+.App {
+    background-color: #FF5640;
+    box-sizing: border-box;
+    height: 100vh;
+}
+
+.form-inputs p {
+    color: red;
+}
+
+.form-input {
+    border-radius: 25px;
+    height: 35px;
+    width: 200px;
+    margin-top: 15px;
+    border: none;
+}
+
+.form-inputs input {
+    background-color: #FFF9F5;
+    color: #FF5050;
+}
+
+.form-inputs ::placeholder {
+    color: #FF5050;
+} */
