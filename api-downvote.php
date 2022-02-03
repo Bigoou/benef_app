@@ -17,7 +17,7 @@
             }
             $newUpvote =  $decoded["upvote"] - 1;
             echo $newUpvote;
-            $db = new PDO('mysql:host=db5005161444.hosting-data.io;dbname=dbs4318125', 'dbu1522474', 'lesoussol06092021', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+            $db = new PDO('mysql:host=;dbname=', '', '', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
             $requete = "UPDATE post SET upvote = :newUpvote WHERE id_post =".$decoded['id_post']."";
             $stmt = $db ->prepare($requete);
             $stmt -> execute(array(
