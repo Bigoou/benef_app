@@ -7,13 +7,18 @@ import plus from './images/icon/icon_plus.svg';
 import plusblanc from './images/icon/icon_plus_blanc.svg';
 import fleche from './images/icon/icon_fleche.svg';
 import axios from 'axios';
+import { BrowserRouter as Router, Switch, Route, Link, useHistory} from 'react-router-dom';
+import validate from './validateInfo'
+
 
 
 const Post = () => {
 
-    const url = "https://benef-app.fr/api-post.php";
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [values, setValues] = useState({
-        image: '',
+        image: undefined,
         title: '',
         desc: '',
         address: '',
@@ -32,8 +37,10 @@ const Post = () => {
         });
         console.log(value);
     };
-    
+
     const img_form = document.getElementById('image');
+    let history = useHistory();
+
 
     const onFileChange = (e) => {
         const file = e.target.files[0];
@@ -49,8 +56,10 @@ const Post = () => {
 
     const myForm = useRef(null);
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrors(validate(values));
+        setIsSubmitting(true);
         // const formData = new FormData();
         // const postForm = myForm.current;
         // const formData = new FormData();
@@ -65,7 +74,8 @@ const Post = () => {
         //         formData.append('cgu', values.cgu);
         // console.log(postForm);
         // console.log(formData);
-        fetch('https://benef-app.fr/api-post.php', {
+        console.log('fetch');
+        const data = await fetch('https://benef-app.fr/api-post.php', {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -73,87 +83,13 @@ const Post = () => {
             },
             body: JSON.stringify(values)
         })
-            .then((response) => response.text())
-            .then((result) => {
-                console.log(result)
-            }).catch(err => {
-                // Do something for an error here
-                console.log("Error Reading data " + err);
-
-            });
-
-        // formData = new FormData(postForm);
-        // axios.post(url,{formData})
-        //     .then(res =>{
-        //         console.log(res);
-        //     })
-        //     .catch(err =>{
-        //         console.log("Error Reading data " + err);
-        //     })
-
-        // const file = this.state.file;
-        // formData.append('image',file);
-        // formData.append('title', values.title)
-
-        // const formData = new FormData();
-        //         formData.append('image', image);
-        //         formData.append('title', values.title);
-        //         formData.append('desc', values.desc);
-        //         formData.append('address', values.address);
-        //         formData.append('postal', values.postal);
-        //         formData.append('expiration', values.expiration);
-        //         formData.append('category', values.category);
-        //         formData.append('certified', values.certified);
-        //         formData.append('cgu', values.cgu);
-
-        //         axios({
-        //             url: 'https://benef-app.fr/api-post.php',
-        //             method: 'POST',
-        //             headers: {
-        //                         'Content-Type': 'multipart/form-data'
-        //                     },
-        //             body: JSON.stringify(formData),
-        //         }).then((res)=>{
-        //             console.log(res.desc);
-        //         }).catch(err => {
-        //                         // Do something for an error here
-        //                         console.log("Error Reading data " + err);
-
-        //         });
-
-        //         const config = {
-        //             headers: {'content-type': 'multipart/form-data'}
-        //         }
-        // axios.post(url, formData, config)
-        // .then(res => {
-        //     console.log(res.desc);
-        // }).catch(err => {
-        //             // Do something for an error here
-        //             console.log("Error Reading data " + err);
-
-        // });
-
-        // formData = new FormData(postForm);
-
-
-        // console.log(formData);
-        // fetch('https://benef-app.fr/api-post.php', {
-        //     method: "POST",
-        //     headers: {
-        //        'Accept': 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(values)
-
-        // })
-        //     .then((response) => response.text())
-        //     .then((result) => {
-        //         console.log(result)
-        //     }).catch(err => {
-        //         // Do something for an error here
-        //         console.log("Error Reading data " + err);
-
-        //     });
+        const response = await data.json();
+        if (response) {
+            console.log("ok");
+        } else {
+            console.log("not ok");
+        }
+       
     };
 
     const [image, setImage] = useState();
@@ -176,8 +112,8 @@ const Post = () => {
 
 
     return (
-        <div className="flex justify-center items-center box-border h-screen mt-3 w-full bg-white-0 dark:bg-gray-550">
-            <div className="bg-red-450 dark:bg-black h-80vh overflow-y-auto rounded-lg shadow-xl w-95vw">
+        <div className="flex justify-center items-center h-screen mt-3 w-full bg-white-0 dark:bg-gray-550 ">
+            <div className="bg-red-450 dark:bg-black xl:w-2/6 h-80vh overflow-y-auto rounded-lg shadow-xl w-95vw">
                 <form className="post flex flex-col justify-center" onSubmit={(e) => handleSubmit(e)} id="post_form" ref={myForm}>
                     <div className="flex relative justify-center items-center">
                         {preview ? (
@@ -212,76 +148,19 @@ const Post = () => {
                     </div>
 
                     <div className="flex h-100px relative justify-center items-center w-4/5">
-                        <div className="w-600px h-80px flex justify-between items-center">
-                            <button className="" id="btn-scroll-left"><img src={fleche} className="h-25px"></img></button>
-                            <button className="" id="btn-scroll-right"><img src={fleche} className="h-25px transform rotate-180"></img></button>
-                            <div className="">
-                                <input id="cat1"
-                                    type="checkbox"
-                                    name="cat1"
-                                    maxLength="30"
-                                    className="form-checkbox rounded-sm bg-transparent ml-2 border-white-0 border-2 text-transparent focus:ring-transparent checked:border-white-0"
-                                    value={values.category}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="cat1" className="text-white-150 pl-2 mr-2">Catégorie 1
-                                </label>
-
-                                <input id="cat2"
-                                    type="checkbox"
-                                    name="cat2"
-                                    maxLength="30"
-                                    className="form-checkbox rounded-sm bg-transparent ml-2 border-white-0 border-2 text-transparent focus:ring-transparent checked:border-white-0"
-                                    value={values.category}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="cat2" className="text-white-150 pl-2 mr-2">Catégorie 2
-                                </label>
-
-                                <input id="cat3"
-                                    type="checkbox"
-                                    name="cat3"
-                                    maxLength="30"
-                                    className="form-checkbox rounded-sm bg-transparent ml-2 border-white-0 border-2 text-transparent focus:ring-transparent checked:border-white-0"
-                                    value={values.category}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="cat3" className="text-white-150 pl-2 mr-2">Catégorie 3
-                                </label>
-
-                                <input id="cat4"
-                                    type="checkbox"
-                                    name="cat4"
-                                    maxLength="30"
-                                    className="form-checkbox rounded-sm bg-transparent ml-2 border-white-0 border-2 text-transparent focus:ring-transparent checked:border-white-0"
-                                    value={values.category}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="cat4" className="text-white-150 pl-2 mr-2">Catégorie 4
-                                </label>
-
-                                <input id="cat5"
-                                    type="checkbox"
-                                    name="cat5"
-                                    maxLength="30"
-                                    className="form-checkbox rounded-sm bg-transparent ml-2 border-white-0 border-2 text-transparent focus:ring-transparent checked:border-white-0"
-                                    value={values.category}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="cat5" className="text-white-150 pl-2 mr-2">Catégorie 5
-                                </label>
-
-                                <input id="cat6"
-                                    type="checkbox"
-                                    name="cat6"
-                                    maxLength="30"
-                                    className="form-checkbox rounded-sm bg-transparent ml-2 border-white-0 border-2 text-transparent focus:ring-transparent checked:border-white-0"
-                                    value={values.category}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="cat6" className="text-white-150 pl-2">Catégorie 6
-                                </label>
-                            </div>
+                        <div className="w-full h-80px flex justify-center items-center">
+                            <select name="category" id="category" onChange={handleChange} className="block appearance-none bg-red-450 text-white-0 border-gray-400 hover:border-gray-500 px-4 py-2 pr-12 ml-12 shadow leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="select">--Choisissez une catégorie--</option>
+                                <option value="1" className="bg-white-0 text-red-450">Restaurant</option>
+                                <option value="2" className="bg-white-0 text-red-450">Bar</option>
+                                <option value="3" className="bg-white-0 text-red-450">Musée / Expo</option>
+                                <option value="4" className="bg-white-0 text-red-450">Festival</option>
+                                <option value="5" className="bg-white-0 text-red-450">Catégorie 5</option>
+                                <option value="6" className="bg-white-0 text-red-450">Catégorie 6</option>
+                            </select>
+                        </div>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg className="fill-white h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                         </div>
                     </div>
 
@@ -337,6 +216,7 @@ const Post = () => {
                             value={values.postal}
                             onChange={handleChange}
                         />
+                        {errors.postal && <p className="absolute -bottom-4 left-10 text-red-900 dark:text-red-650">{errors.postal}</p>}
                     </div>
 
                     <div className="flex  relative justify-center items-center">
@@ -379,7 +259,6 @@ const Post = () => {
                         </label>
 
                     </div>
-
                     <div className="flex justify-end items-center py-5 mr-5">
                         <button className="block w-24 h-9 text-red-450 text-lg font-bold border-2 border-white-0 bg-white-0 hover:bg-red-450 hover:text-white-0 hover:border-white-0 dark:hover:bg-white-150 dark:hover:text-gray-550 active:bg-red-200 dark:bg-white-0 dark:text-black rounded-full transition duration-300 ease-in-out" type="submit">Publier</button>
                     </div>

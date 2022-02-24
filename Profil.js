@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import coeur from './images/icon/heart_contour.svg';
 import coeurplein from './images/icon/heart_rempli.svg';
 import { useState } from 'react';
@@ -6,8 +7,56 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import plus from './images/icon/icon_plus.svg';
 import plusblanc from './images/icon/icon_plus_blanc.svg';
+import ToggleLike from './toggle-like.js';
+import lottie from 'lottie-web';
+import Lottie from 'react-lottie';
+import animationData from './like.json';
 
 const Profil = () => {
+
+    const [state, setState] = useState(false);
+    const defaultOptions = {
+        loop: false,
+        autoplay: true,
+        animationData: animationData,
+        rendererSettings: {
+            preserveAspectRatio: 'xMidYMid slice'
+        }
+    };
+
+    const container = useRef(null)
+
+    useEffect(() => {
+        lottie.loadAnimation({
+            container: container.current,
+            renderer: 'svg',
+            loop: false,
+            autoplay: false,
+            animationData: require('./like.json')
+        })
+    }, [])
+
+    const [etat, setEtat] = useState({
+        isStopped: true,
+        isPaused: false,
+        speed: 1,
+        direction: 1,
+        isLiked: false,
+    });
+
+    const clickHandler = () => {
+        if (!etat.isStopped) {
+            setEtat({
+                ...etat,
+                direction: etat.direction * -1
+            });
+        }
+        setEtat({
+            ...etat,
+            isStopped: false,
+            isLike: !etat.isLike
+        });
+    }
 
     const [values, setValues] = useState({
         image: '',
@@ -62,28 +111,48 @@ const Profil = () => {
         modifbio(false);
     };
 
+    function handleDeconnexion() {
+        sessionStorage.clear();
+        window.location.reload();
+    }
+
 
     if (bio === false) {
         return (
-            <div className="flex flex-col justify-center items-center h-screen w-screen bg-white">
-                <div id="infos" className="relative grid grid-cols-2 grid-layout w-95vw px-4">
+            <div className="flex flex-col justify-center items-center xl:mt-20 h-screen w-screen bg-white-0 xl:dark:bg-gray-550 dark:text-white-0">
+                <div id="infos" className="relative grid grid-cols-2 grid-layout xl:w-2/6 w-95vw px-4 xl:-px-0">
                     <div className="flex items-center">
-                        <img className="w-100px h-100px bg-transparent dark:bg-gray-650 border-3 border-red-450 dark:border-black rounded-full object-cover " />
+                        <img className="w-100px h-100px bg-transparent dark:bg-gray-650 border-3 border-red-450 dark:border-black rounded-full object-cover" />
                         <h1 className="ml-3 text-xl font-semibold">{sessionStorage.getItem("user")}</h1>
                     </div>
                     <p className="col-span-2 mt-2">Jeune passioné de sorties j’adore la vie ahaha comme dirait la chanson française très célèbre je vois la vie en rose mdrrr ! J’adore le cinéma d’auteur, très peu pour moi les blockbusters hollywoodiens (sauf Joker, j’ai a-do-ré).</p>
                     <div className="flex items-center justify-between col-span-2 h-16 pt-4">
-                        <button onClick={handleConnexion} className="flex items-center h-10 bg-red-450 py-2 px-4 rounded-3xl text-white-0 hover:bg-white-0 hover:text-red-450 hover:border-red-450 border-2 border-red-450">Modifie ton profil</button>
-                        <button className="flex items-center text-red-450 hover:underline">Voir mes favoris <img className="pl-1 h-15px fill-current" src={coeur} alt="" /></button>
+                        <button onClick={handleConnexion} className="flex items-center h-10 bg-red-450 py-2 px-4 rounded-3xl text-white-0 dark:text-black hover:bg-white-0 hover:text-red-450 hover:border-red-450 border-2 border-red-450 dark:bg-white-0 dark:border-white-0">Modifie ton profil</button>
+                        <Link to="/favoris"><button className="flex items-center text-red-450 dark:text-white-0 hover:underline">Voir mes favoris <img className="pl-1 h-15px fill-current" src={coeur} alt="" /></button></Link>
                     </div>
+                    {/* <div className="flex justify-end items-center py-5 mr-5">
+                                <button onClick={handleDeconnexion} className="block px-5 py-2 text-white-0 text-lg font-semibold bg-red-450 hover:bg-white-0 hover:text-red-450 hover:border-red-450 border-2 border-red-450 dark:hover:bg-white-150 dark:hover:text-gray-550 active:bg-red-200 dark:bg-white-0 dark:text-black rounded-full transition duration-300 ease-in-out" type="submit">Déconnexion</button>
+                            </div> */}
                 </div>
-                <div id="barre1" className="h-1px w-95vw mt-4 bg-gray-200"></div>
-                <div id="badges" className="w-95vw">
+                <div id="barre1" className="h-1px w-95vw xl:w-2/6 mt-4 bg-gray-200"></div>
+                <div id="badges" className="w-95vw xl:w-2/6">
                     <h3 className="font-semibold pt-4 pl-4">Badges</h3>
                 </div>
-                <div id="barre1" className="h-1px w-95vw mt-4 bg-gray-200"></div>
-                <div id="bp_perso" className="w-95vw">
-                    <h3 className="font-semibold pt-4 pl-4">Bons plans publiés</h3>
+                <div id="barre1" className="h-1px w-95vw mt-4 bg-gray-200 xl:w-2/6"></div>
+                <div id="bp_perso" className="w-95vw xl:w-2/6">
+                    <h3 className="font-semibold pt-4 pl-4 ">Bons plans publiés</h3>
+                    {/* <ToggleLike /> */}
+                    {/* <button ref={container} onClick={clickHandler}></button> */}
+                    <button 
+                        onClick={() => {
+                            setState(!state);
+                        }}
+                        >
+                            {state ? "cacher" : "montrer"}
+                    </button>
+                    <div>
+                        {state && <Lottie options={defaultOptions} height={40} width={40} />}
+                    </div>
                 </div>
             </div>
         )
@@ -154,7 +223,7 @@ const Profil = () => {
                                 name="desc"
                                 rows="40"
                                 className=" resize-y pt-3 placeholder-gray-500 text-black dark:text-white-0 border-b-2 bg-transparent w-4/5 h-24 text-left focus:outline-none  focus:placeholder-transparent"
-                                placeholder="Description"
+                                placeholder={sessionStorage.getItem("desc")}
                                 value={values.desc}
                                 onChange={handleChange}
                             ></textarea>

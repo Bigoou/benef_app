@@ -3,10 +3,6 @@ import { Redirect } from 'react-router';
 import { useHistory } from "react-router-dom";
 
 
-
-
-
-
 const useForm = (callback, validate) => {
   
   let history = useHistory();
@@ -24,11 +20,23 @@ const useForm = (callback, validate) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [errorsConnexion, setErrorsConnexion] = useState({
+    emptyUsername : false,
+    emptyPassword : false,
+    wrongEntries : false,
+  });
+
   const [valuesConnexion, setValuesConnexion] = useState({
     username:'',
     mdp:"",
     showPassword: false,
   });
+
+  const [stayConnected, setStayConnected] = useState(false);
+
+  const handleStayConnected = () => {
+    setStayConnected(!stayConnected);
+  }
   
   const handleChange = e => {
     const { name, value } = e.target;
@@ -89,7 +97,7 @@ const useForm = (callback, validate) => {
 
 const handleSubmitConnexion = e => {
   e.preventDefault();
-  // setErrors(validate(values));
+  setErrors(validate(values));
   setIsSubmitting(true);
   var test = JSON.stringify(valuesConnexion);
   console.log(test)
@@ -105,16 +113,32 @@ body: JSON.stringify(valuesConnexion)
 .then((response) => response.json())
 .then((data) => {
   console.log(data);
-sessionStorage.setItem("user", data.username);
-sessionStorage.setItem("isConnected", true)
+  if(stayConnected){
+    localStorage.setItem("isConnected", true);
+  }else{
+    sessionStorage.setItem("user", data.username);
+  }
+sessionStorage.setItem("isConnected", true);
+sessionStorage.setItem("id_user", data.id_user)
+console.log(stayConnected)
 console.log(sessionStorage.getItem("user"))
+if(localStorage.getItem("isConnected")){
+  window.location.reload();
+}else 
 if(sessionStorage.getItem("isConnected")){
   console.log("oui il est bien connecté là")
   window.location.reload();
+  console.log(stayConnected)
 }
 })
 .catch(err => {
 console.log("Error Reading data " + err);
+console.log(stayConnected);
+setErrorsConnexion({
+  ...errorsConnexion,
+    wrongEntries : true
+});
+console.log(errorsConnexion);
 });
 };
 
@@ -129,7 +153,7 @@ console.log("Error Reading data " + err);
     [errors]
   );
 
-  return {handleChange,handleClickShowPassword,handleClickShowPassword2,handleMouseDownPassword, handleSubmit, handleSubmitConnexion, handleChangeCo, values, valuesConnexion, errors };
+  return {handleChange,handleClickShowPassword,handleClickShowPassword2,handleMouseDownPassword, handleSubmit, handleSubmitConnexion, handleChangeCo, values, valuesConnexion, errors, errorsConnexion, handleStayConnected, stayConnected };
 };
 
 export default useForm ;

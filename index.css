@@ -1,3 +1,16 @@
 @tailwind base;
+
+#toggle_light_mode:checked ~ label div.toggle-dot {
+    @apply translate-x-3;
+};
+
+#toggle_btn_3:checked ~ label div.toggle-dot-2 {
+    @apply translate-x-3;
+};
+
+#toggle_btn_3:checked ~ label div.toggle-dot-3 {
+    @apply translate-x-3;
+};
+
 @tailwind components;
 @tailwind utilities;
